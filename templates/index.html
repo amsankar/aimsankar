@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assets Management Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>Assets Management Dashboard</h1>
+            <p class="subtitle">Track and manage all organizational assets</p>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="nav-menu">
+            <button class="nav-btn active" onclick="switchTab('dashboard')">Dashboard</button>
+            <button class="nav-btn" onclick="switchTab('assets')">Assets</button>
+            <button class="nav-btn" onclick="switchTab('gadgets')">Gadgets</button>
+            <button class="nav-btn" onclick="switchTab('maintenance')">Maintenance</button>
+            <button class="nav-btn" onclick="switchTab('categories')">Categories</button>
+            <button class="nav-btn" onclick="switchTab('locations')">Locations</button>
+        </nav>
+
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Total Assets</h3>
+                    <p class="stat-value" id="totalAssets">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Active Assets</h3>
+                    <p class="stat-value" id="activeAssets">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Inactive Assets</h3>
+                    <p class="stat-value" id="inactiveAssets">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Gadgets</h3>
+                    <p class="stat-value" id="totalGadgets">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Gadgets Quantity</h3>
+                    <p class="stat-value" id="gadgetsQuantity">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Maintenance Records</h3>
+                    <p class="stat-value" id="maintenanceRecords">0</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Assets Tab -->
+        <div id="assets" class="tab-content">
+            <div class="section-header">
+                <h2>Assets Inventory</h2>
+                <button class="btn btn-primary" onclick="showAssetForm()">+ Add Asset</button>
+            </div>
+
+            <div class="search-bar">
+                <input type="text" id="assetSearch" placeholder="Search assets..." onkeyup="filterAssets()">
+            </div>
+
+            <table class="data-table" id="assetsTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>Location</th>
+                        <th>Status</th>
+                        <th>Purchase Cost</th>
+                        <th>Created Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="assetsList">
+                    <tr><td colspan="8" class="text-center">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Gadgets Tab -->
+        <div id="gadgets" class="tab-content">
+            <div class="section-header">
+                <h2>Gadgets & Accessories</h2>
+                <button class="btn btn-primary" onclick="showGadgetForm()">+ Add Gadget</button>
+            </div>
+
+            <div class="search-bar">
+                <input type="text" id="gadgetSearch" placeholder="Search gadgets..." onkeyup="filterGadgets()">
+            </div>
+
+            <table class="data-table" id="gadgetsTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>Quantity</th>
+                        <th>Location</th>
+                        <th>Unit Cost</th>
+                        <th>Total Cost</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="gadgetsList">
+                    <tr><td colspan="9" class="text-center">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Maintenance Tab -->
+        <div id="maintenance" class="tab-content">
+            <div class="section-header">
+                <h2>Maintenance Records</h2>
+                <button class="btn btn-primary" onclick="showMaintenanceForm()">+ Add Record</button>
+            </div>
+
+            <table class="data-table" id="maintenanceTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Asset ID</th>
+                        <th>Date</th>
+                        <th>Type</th>
+                        <th>Cost</th>
+                        <th>Notes</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="maintenanceList">
+                    <tr><td colspan="7" class="text-center">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Categories Tab -->
+        <div id="categories" class="tab-content">
+            <div class="section-header">
+                <h2>Asset Categories</h2>
+                <button class="btn btn-primary" onclick="showCategoryForm()">+ Add Category</button>
+            </div>
+
+            <table class="data-table" id="categoriesTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="categoriesList">
+                    <tr><td colspan="4" class="text-center">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Locations Tab -->
+        <div id="locations" class="tab-content">
+            <div class="section-header">
+                <h2>Asset Locations</h2>
+                <button class="btn btn-primary" onclick="showLocationForm()">+ Add Location</button>
+            </div>
+
+            <table class="data-table" id="locationsTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Address</th>
+                        <th>City</th>
+                        <th>State</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="locationsList">
+                    <tr><td colspan="6" class="text-center">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal for Asset Form -->
+    <div id="assetModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="assetModalTitle">Add Asset</h2>
+                <span class="close" onclick="closeAssetModal()">&times;</span>
+            </div>
+            <form id="assetForm" onsubmit="saveAsset(event)">
+                <input type="hidden" id="assetId">
+                <div class="form-group">
+                    <label>Asset Name *</label>
+                    <input type="text" id="assetName" required>
+                </div>
+                <div class="form-group">
+                    <label>Category *</label>
+                    <select id="assetCategory" required></select>
+                </div>
+                <div class="form-group">
+                    <label>Location *</label>
+                    <select id="assetLocation" required></select>
+                </div>
+                <div class="form-group">
+                    <label>Purchase Date</label>
+                    <input type="date" id="assetPurchaseDate">
+                </div>
+                <div class="form-group">
+                    <label>Purchase Cost</label>
+                    <input type="number" id="assetPurchaseCost" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <select id="assetStatus">
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                        <option value="Maintenance">Maintenance</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="assetDescription"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Save Asset</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for Gadget Form -->
+    <div id="gadgetModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Gadget</h2>
+                <span class="close" onclick="closeGadgetModal()">&times;</span>
+            </div>
+            <form id="gadgetForm" onsubmit="saveGadget(event)">
+                <input type="hidden" id="gadgetId">
+                <div class="form-group">
+                    <label>Gadget Name *</label>
+                    <input type="text" id="gadgetName" required>
+                </div>
+                <div class="form-group">
+                    <label>Category *</label>
+                    <input type="text" id="gadgetCategory" required>
+                </div>
+                <div class="form-group">
+                    <label>Quantity *</label>
+                    <input type="number" id="gadgetQuantity" required min="1">
+                </div>
+                <div class="form-group">
+                    <label>Location *</label>
+                    <select id="gadgetLocation" required></select>
+                </div>
+                <div class="form-group">
+                    <label>Purchase Date</label>
+                    <input type="date" id="gadgetPurchaseDate">
+                </div>
+                <div class="form-group">
+                    <label>Unit Cost</label>
+                    <input type="number" id="gadgetUnitCost" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label>Total Cost</label>
+                    <input type="number" id="gadgetTotalCost" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <select id="gadgetStatus">
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                        <option value="Maintenance">Maintenance</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="gadgetDescription"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Save Gadget</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for Maintenance Form -->
+    <div id="maintenanceModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Maintenance Record</h2>
+                <span class="close" onclick="closeMaintenanceModal()">&times;</span>
+            </div>
+            <form id="maintenanceForm" onsubmit="saveMaintenance(event)">
+                <input type="hidden" id="maintenanceId">
+                <div class="form-group">
+                    <label>Asset ID *</label>
+                    <select id="maintenanceAssetId" required></select>
+                </div>
+                <div class="form-group">
+                    <label>Date *</label>
+                    <input type="date" id="maintenanceDate" required>
+                </div>
+                <div class="form-group">
+                    <label>Type *</label>
+                    <select id="maintenanceType" required>
+                        <option value="Preventive">Preventive</option>
+                        <option value="Corrective">Corrective</option>
+                        <option value="Emergency">Emergency</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Cost</label>
+                    <input type="number" id="maintenanceCost" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label>Notes</label>
+                    <textarea id="maintenanceNotes"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Save Record</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for Category Form -->
+    <div id="categoryModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Category</h2>
+                <span class="close" onclick="closeCategoryModal()">&times;</span>
+            </div>
+            <form id="categoryForm" onsubmit="saveCategory(event)">
+                <input type="hidden" id="categoryId">
+                <div class="form-group">
+                    <label>Category Name *</label>
+                    <input type="text" id="categoryName" required>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="categoryDescription"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Save Category</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for Location Form -->
+    <div id="locationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Location</h2>
+                <span class="close" onclick="closeLocationModal()">&times;</span>
+            </div>
+            <form id="locationForm" onsubmit="saveLocation(event)">
+                <input type="hidden" id="locationId">
+                <div class="form-group">
+                    <label>Location Name *</label>
+                    <input type="text" id="locationName" required>
+                </div>
+                <div class="form-group">
+                    <label>Address</label>
+                    <input type="text" id="locationAddress">
+                </div>
+                <div class="form-group">
+                    <label>City</label>
+                    <input type="text" id="locationCity">
+                </div>
+                <div class="form-group">
+                    <label>State</label>
+                    <input type="text" id="locationState">
+                </div>
+                <button type="submit" class="btn btn-primary">Save Location</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
